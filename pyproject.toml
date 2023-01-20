@@ -1,4 +1,4 @@
-[fastai_classifier]
+[build-system]
 name = "fastai_classifier"
 version = "0.0.1"
 dependencies = [
