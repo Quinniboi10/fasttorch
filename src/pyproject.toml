@@ -1,0 +1,8 @@
+[fastai_classifier]
+name = "fastai_classifier"
+version = "0.0.1"
+dependencies = [
+    "fastbook==0.0.10",
+    'python_version=>"3.7"',
+    'python_version=<"3.8"'
+]
