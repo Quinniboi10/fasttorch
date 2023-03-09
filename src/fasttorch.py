@@ -15,7 +15,7 @@ parser.add_argument("--cycle_count", type=int, default=32, help="Number of train
 parser.add_argument("--load_from", type=str, default=None, help="Cycle number to load from")
 parser.add_argument("--arch", type=str, choices=['resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152', 'densenet121', 'densenet161', 'densenet169', 'densenet201'], help="Resnet/Densnet model to use when training")
 parser.add_argument("--image_resolution", type=int, default=256, help="Resolution the training images will be rescaled to")
-parser.add_argument("--batch_size", type=int, default=None, help="Default batch size")
+parser.add_argument("--batch_size", type=int, default=64, help="Default batch size")
 parser.add_argument('--export', action='store_true',default=False, help="Create an .pkl export to be used for classification")
 parser.add_argument('--autosave', action='store_true',default=False, help="Automatically save models")
 
