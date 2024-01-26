@@ -113,7 +113,7 @@ if args.autosave:
     if args.load_from == None:
         args.load_from = 0
     elif args.load_from == 'bestmodel':
-        load_model(learn.model, str(os.path.join(args.model_path, "models", "bestmodel.pth"))
+        load_model(learn.model, str(os.path.join(args.model_path, "models", "bestmodel.pth")))
     else:
         load_model(learn.model, os.path.join(srt(args.model_path), "models", f"export {args.load_from} on {args.arch}.pth"))
     learn.fine_tune(args.cycle_count, cbs=callbacks)
