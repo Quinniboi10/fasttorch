@@ -17,7 +17,7 @@ parser.add_argument("--image_resolution", type=int, default=256,
                     help="Resolution the training images will be rescaled to")
 parser.add_argument("--batch_size", type=int, default=64, help="Default batch size")
 parser.add_argument('--export', action='store_true', default=False,
-                    help="Create an .pkl export to be used for generation")
+                    help="Create an .pkl export to be used for classification")
 parser.add_argument('--autosave', action='store_true', default=False, help="Automatically save models")
 
 args = parser.parse_args()
