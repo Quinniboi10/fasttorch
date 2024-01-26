@@ -3,9 +3,9 @@ from fastbook import *
 from fastai.vision.all import *
 from fastai.callback import *
 from warnings import warn
-#Create the parser
+# Create the parser
 parser = argparse.ArgumentParser(description="Simple FastAI image classifier.")
-#Add the arguments
+# Add the arguments
 parser.add_argument("--path", type=str, default='./', help="Path to the folder with subfolders named the image types, each containing training images")
 parser.add_argument("--model_path", type=str, default='./', help="Path to the folder for model exports")
 parser.add_argument("--save_every", type=int, default=8, help="How often to save a model in cycles")
@@ -17,19 +17,19 @@ parser.add_argument("--batch_size", type=int, default=64, help="Default batch si
 parser.add_argument('--export', action='store_true',default=False, help="Create an .pkl export to be used for classification")
 parser.add_argument('--autosave', action='store_true',default=False, help="Automatically save models")
 
-#Parse the arguments
+
+# Parse the arguments
 args = parser.parse_args()
 try:
     args.load_from = int(args.load_from)
 except:
     if args.load_from != 'bestmodel' and args.load_from != None:
         warn("Expected an integer or 'bestmodel'.")
-        
-if args.save_every == None:
-    args.save_every = 8
-if args.cycle_count == None:
-    args.cycle_count = 64
-#Prep the args
+
+if not os.path.exists(os.path.join(args.model_path, "models")):
+    os.makedirs(os.path.join(args.model_path, "models"))
+
+# Make sure 
 if args.path[len(args.path)-1] != '\\':
     if '\\' in args.path:
         args.path = args.path+'\\'
@@ -55,6 +55,8 @@ def save_model(m, p): torch.save(m.state_dict(), p)
 def load_model(m, p): m.load_state_dict(torch.load(p))
 def next_multiple(x, y):
     return (x + (y-1)) // y * y
+
+# Define the dataloader and the learner
 class DataLoaders(GetAttr):
     def __init__(self, *loaders): self.loaders = loaders
     def __getitem__(self, i): return self.loaders[i]
@@ -72,11 +74,16 @@ model = model.new(
 dls = model.dataloaders(path, bs=args.batch_size)
 strt = 0
 learn = vision_learner(dls, arch_map[args.arch], metrics=error_rate, path=args.model_path)
+
+# Main code
+# Check if user wanted to export
 if args.export:
     load_model(learn.model, str(args.model_path)+f'/models/export {args.load_from} on {args.arch}.pth')
     learn.export(str(args.model_path)+f'/models/export {args.load_from} on {args.arch}.pkl')
     exit()
-if args.load_from != None:
+
+# Check if the user wanted to load
+if args.load_from != None and not args.autosave:
     #learn.load(str(args.model_path)+f'/export {args.load_from} on {args.arch}.pkl')
     print("Loading and preparing model...")
     if args.load_from == 'bestmodel':
@@ -100,17 +107,20 @@ callbacks = [
     ReduceLROnPlateau(min_delta=0.1, patience=2)
 ]
         
-        
+# Check if the user wanted to use the fastai autosave function
 if args.autosave:
-    #if args.load_from != None:
-        #print("Loading and preparing model...")
-        #load_model(learn.model, str(args.model_path)+f'/models/export {args.load_from} on {args.arch}.pth')
     print("Starting training...")
     if args.load_from == None:
         args.load_from = 0
+    elif args.load_from == 'bestmodel':
+        load_model(learn.model, str(os.path.join(args.model_path, "models", "bestmodel.pth"))
+    else:
+        load_model(learn.model, os.path.join(srt(args.model_path), "models", f"export {args.load_from} on {args.arch}.pth"))
     learn.fine_tune(args.cycle_count, cbs=callbacks)
     print("\n\n\nTraning Complete.")
     exit()
+
+# Main loop if none of the other conditions were met
 cycle = args.cycle_count
 save_every = args.save_every
 for x in range(strt, cycle//save_every):
