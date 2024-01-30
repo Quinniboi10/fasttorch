@@ -21,7 +21,8 @@ parser.add_argument("--load_from", type=str, default=None, help="Cycle number or
 parser.add_argument("--arch", type=str, choices=['resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152', 'densenet121', 'densenet161', 'densenet169', 'densenet201'], help="Model architecture")
 parser.add_argument("--image_resolution", type=int, default=256, help="Image resolution for training")
 parser.add_argument("--batch_size", type=int, default=64, help="Batch size")
-parser.add_argument('--export', action='store_true', help="Export model as .pkl")
+parser.add_argument('--stopearly', action='store_true', default=False, help="Stop early when learning is not progressing")
+parser.add_argument('--export', action='store_true', default=False, help="Export model as .pkl")
 
 # Parse the arguments
 args = parser.parse_args()
@@ -121,10 +122,10 @@ if args.export:
 # Define callbacks
 callbacks = [
     SaveModelCallback(fname=f"export bestmodel on {args.arch}"),
-    #EarlyStoppingCallback(min_delta=0.0025, patience=8),
     ReduceLROnPlateau(min_delta=0.01, patience=2),
     TensorBoardCallback("./tensorboard/")
 ]
+if args.stopearly: callbacks.append(EarlyStoppingCallback(min_delta=0.0025, patience=8))
 
 # Load model if specified
 if args.load_from is not None:
