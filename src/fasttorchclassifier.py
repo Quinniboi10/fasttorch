@@ -19,5 +19,5 @@ print("Thinking...")
 
 pred,pred_idx,probs = learn.predict(Path(args.image_path))
 prob = f'{probs[pred_idx]:.04f}'
-prob = round(float(prob)*10000)/100
+prob = round(float(prob*100), 2)
 print(f"Classified as {pred} with {prob}% confidence.")
